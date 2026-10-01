@@ -13,6 +13,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
+
   @Get()
   findAll() {
     return {
