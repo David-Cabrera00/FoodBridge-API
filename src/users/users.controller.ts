@@ -1,7 +1,3 @@
-import { Controller } from '@nestjs/common';
-
-@Controller('users')
-export class UsersController {}
 import {
   Body,
   Controller,
@@ -17,6 +13,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
+
   @Get()
   findAll() {
     return {
