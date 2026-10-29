@@ -10,11 +10,31 @@ import { RequestsModule } from './requests/requests.module';
 import { PickupsModule } from './pickups/pickups.module';
 import { CategoriesModule } from './categories/categories.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        host: config.getOrThrow<string>('POSTGRES_HOST'),
+        port: Number(config.getOrThrow<string>('POSTGRES_PORT')),
+        username: config.getOrThrow<string>('POSTGRES_USER'),
+        password: config.getOrThrow<string>('POSTGRES_PASSWORD'),
+        database: config.getOrThrow<string>('POSTGRES_DB'),
+        autoLoadEntities: true,
+        synchronize: process.env.NODE_ENV !== 'production',
+      }),
+    }),
+
     // Distributed tracing, auto-correlated logs, request/job metrics, error
     // telemetry, alarms, and more — out of the box. Sign up at https://observe.nestjs.com
     ObserveModule.forRoot({
