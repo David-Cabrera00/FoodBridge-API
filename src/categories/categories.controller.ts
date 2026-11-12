@@ -4,69 +4,44 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
 } from '@nestjs/common';
+
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { Category } from './interfaces/category.interface';
+import { CategoriesService } from './categories.service';
 
 @Controller('categories')
 export class CategoriesController {
-  private categories: Category[] = [];
+  constructor(private readonly categoriesService: CategoriesService) {}
 
   @Get()
-  findAll(): Category[] {
-    return this.categories;
+  findAll() {
+    return this.categoriesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Category | undefined {
-    return this.categories.find((category) => category.id === id);
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.categoriesService.findOne(id);
   }
 
   @Post()
   create(@Body() createCategoryDto: CreateCategoryDto) {
-    const newCategory: Category = {
-      id: Date.now().toString(),
-      ...createCategoryDto,
-    };
-
-    this.categories.push(newCategory);
-
-    return newCategory;
+    return this.categoriesService.create(createCategoryDto);
   }
 
   @Put(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
-    const category = this.categories.find((item) => item.id === id);
-
-    if (!category) {
-      return {
-        message: 'Category not found',
-      };
-    }
-
-    Object.assign(category, updateCategoryDto);
-
-    return category;
+    return this.categoriesService.update(id, updateCategoryDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    const index = this.categories.findIndex((category) => category.id === id);
-
-    if (index === -1) {
-      return {
-        message: 'Category not found',
-      };
-    }
-
-    const deletedCategory = this.categories.splice(index, 1);
-
-    return deletedCategory[0];
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.categoriesService.remove(id);
   }
 }
