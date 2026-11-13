@@ -1,3 +1,4 @@
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   Controller,
   Body,
@@ -13,6 +14,7 @@ import { UpdateRequestDto } from './dto/update-request.dto';
 
 import { RequestsService } from './requests.service';
 
+@ApiTags('requests')
 @Controller('requests')
 export class RequestsController {
   constructor(private readonly service: RequestsService) {}
@@ -27,6 +29,18 @@ export class RequestsController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Solicitud creada; copiar id. status: pending.' })
+  @ApiResponse({
+    status: 201,
+    description: 'Solicitud creada; copiar id. status: pending.',
+  })
+  @ApiResponse({ status: 400, description: 'Datos o identificador invalidos' })
+  @ApiResponse({
+    status: 404,
+    description: 'Registro referenciado no encontrado',
+  })
+  @ApiResponse({ status: 409, description: 'Conflicto de datos' })
+  @ApiResponse({ status: 500, description: 'Error de persistencia' })
   create(@Body() createRequestDto: CreateRequestDto) {
     return this.service.create(createRequestDto);
   }
@@ -42,6 +56,21 @@ export class RequestsController {
   }
 
   @Put(':id/accept')
+  @ApiOperation({
+    summary: 'Misma solicitud con status: accepted. Enviar status accepted.',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Misma solicitud con status: accepted. Enviar status accepted.',
+  })
+  @ApiResponse({ status: 400, description: 'Datos o identificador invalidos' })
+  @ApiResponse({
+    status: 404,
+    description: 'Registro referenciado no encontrado',
+  })
+  @ApiResponse({ status: 409, description: 'Conflicto de datos' })
+  @ApiResponse({ status: 500, description: 'Error de persistencia' })
   accept(
     @Param('id') id: string,
     @Body() changeRequestStatusDto: ChangeRequestStatusDto,
