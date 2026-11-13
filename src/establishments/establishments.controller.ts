@@ -1,3 +1,4 @@
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -13,6 +14,7 @@ import { CreateEstablishmentDto } from './dto/create-establishment.dto';
 import { UpdateEstablishmentDto } from './dto/update-establishment.dto';
 import { EstablishmentsService } from './establishments.service';
 
+@ApiTags('establishments')
 @Controller('establishments')
 export class EstablishmentsController {
   constructor(private readonly establishmentsService: EstablishmentsService) {}
@@ -28,6 +30,14 @@ export class EstablishmentsController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Establecimiento creado; copiar id.' })
+  @ApiResponse({
+    status: 201,
+    description: 'Establecimiento creado; copiar id.',
+  })
+  @ApiResponse({ status: 400, description: 'Datos o identificador invalidos' })
+  @ApiResponse({ status: 409, description: 'Conflicto de datos' })
+  @ApiResponse({ status: 500, description: 'Error de persistencia' })
   create(@Body() createEstablishmentDto: CreateEstablishmentDto) {
     return this.establishmentsService.create(createEstablishmentDto);
   }
